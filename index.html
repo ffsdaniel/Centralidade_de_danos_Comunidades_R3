@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="./resources/ol.css">
+        <link rel="stylesheet" href="resources/fontawesome-all.min.css">
+        <link rel="stylesheet" type="text/css" href="resources/horsey.min.css">
+        <link rel="stylesheet" type="text/css" href="resources/ol3-search-layer.min.css">
+        <link rel="stylesheet" href="./resources/ol-layerswitcher.css">
+        <link rel="stylesheet" href="./resources/qgis2web.css">
+        <style>
+        html, body {
+            background-color: #ffffff;
+        }
+        .ol-control > * {
+            background-color: #f8f8f8!important;
+            color: #444444!important;
+            border-radius: 0px;
+        }
+        .ol-attribution a, .gcd-gl-input::placeholder, .search-layer-input-search::placeholder {
+            color: #444444!important;
+        }
+        .search-layer-input-search {
+            background-color: #f8f8f8!important;
+        }
+        .ol-control > *:focus, .ol-control >*:hover {
+            background-color: rgba(248, 248, 248, 0.7)!important;
+        } 
+        .ol-control {
+            background-color: rgba(255,255,255,.4) !important;
+            padding: 2px !important;
+        }
+        
+        /* Estilos do menu de categorias */
+        #category-menu {
+            position: absolute;
+            top: 150px;
+            left: 10px;
+            background: rgba(255,255,255,0.9);
+            padding: 8px;
+            border-radius: 3px;
+            z-index: 1000;
+            width: 150px;
+            font-size: 12px;
+        }
+        
+        #category-menu h3 {
+            margin: 0 0 5px 0;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        #category-select {
+            width: 100%;
+            padding: 3px;
+            font-size: 11px;
+        }
+        
+        /* Legenda no canto inferior direito */
+        #legend {
+            position: absolute;
+            bottom: 30px;
+            right: 10px;
+            background: rgba(255,255,255,0.95);
+            padding: 8px;
+            border-radius: 3px;
+            z-index: 1000;
+            font-size: 11px;
+            max-width: 250px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        #legend.show {
+            display: block;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 2px 0;
+        }
+        
+        .legend-color {
+            width: 15px;
+            height: 12px;
+            margin-right: 5px;
+            border: 1px solid #666;
+            flex-shrink: 0;
+        }
+        
+        .legend-text {
+            font-size: 10px;
+            line-height: 1.2;
+        }
+        </style>
+
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title>Comunidades da Região 3 - Categorias de danos </title>
+    </head>
+    <body>
+        <div id="map">
+            <div id="popup" class="ol-popup">
+                <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+                <div id="popup-content"></div>
+            </div>
+            
+            <!-- Menu de seleção de categorias -->
+            <div id="category-menu">
+                <h3>Categorias</h3>
+                <select id="category-select">
+                    <option value="">Selecione</option>
+                    <option value="Sociabilidade: danos que prejudicam as relações interpessoais, familiares e comunitárias ">Sociabilidade</option>
+                    <option value="Patrimônio Cultural e Cultura: Danos que afetam o patrimônio e as manifestações culturais locais">Patrimônio Cultural</option>
+                    <option value="Lazer: Danos que reduzem o acesso ao lazer">Lazer</option>
+                    <option value="Educação: Danos que dificultam o acesso à educação e prejudicam as condições de ensino">Educação</option>
+                    <option value="Mobilidade: danos que impactam o transporte e circulação">Mobilidade</option>
+                    <option value="Modos de vida: danos aos projetos,  modos e qualidade de vida">Modos de vida</option>
+                    <option value="Infraestrutura: Danos que impactam negativamento o acesso e uso de infraestruturas básicas">Infraestrutura</option>
+                    <option value="Saúde: danos que dificultam o tratamento e agravam as condições de saúde física e mental ">Saúde</option>
+                    <option value="Água: Danos associados à perda ou diminuição do acesso água">Água</option>
+                    <option value="Alimentação: Danos associados à redução da oferta ou da produção de alimentos">Alimentação</option>
+                    <option value="Economia tradicional: danos aos bens, posses e atividades econômicas tradicionais">Economia tradicional</option>
+                    <option value="Socioassistência: danos que agravam vunerabilidades e dificultam o acesso à serviços e direitos socioassistenciais">Socioassistência</option>
+                    <option value="Turismo: danos que reduzem as oportunidades e benefícios do turismo">Turismo</option>
+                    <option value="Trabalho: danos que prejudicam as oportunidades e condições de trabalho">Trabalho</option>
+                    <option value="Produção: danos associados à perda ou restrição da produção agrícola, agropecuária e extrativista">Produção</option>
+                    <option value="Atividade Econômica: Danos que impactam negativamente o comércio e a economia local">Atividade Econômica</option>
+                    <option value="Moradia: Danos que reduzem e dificultam as condições de moradia e habitabilidade de comunidades urbanas e rurais">Moradia</option>
+                    <option value="População da comunidade">População</option>
+                </select>
+            </div>
+            
+            <!-- Legenda -->
+            <div id="legend"></div>
+        </div>
+        
+        <script src="resources/qgis2web_expressions.js"></script>
+        <script src="resources/proj4.js"></script>
+        <script>proj4.defs('EPSG:31983','+proj=utm +zone=23 +south +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');</script>
+        <script src="./resources/functions.js"></script>
+        <script src="./resources/ol.js"></script>
+        <script src="resources/horsey.min.js"></script>
+        <script src="resources/ol3-search-layer.js"></script>
+        <script src="./resources/ol-layerswitcher.js"></script>
+        <script src="layers/MunicpiosdaRegio3_2.js"></script>
+        <script src="layers/Categorias_Danos_populacao_distanciasarquivo_de_sada_3.js"></script>
+        <script src="layers/RioParaopeba_4.js"></script>
+        <script src="styles/MunicpiosdaRegio3_2_style.js"></script>
+        <script src="styles/Categorias_Danos_populacao_distanciasarquivo_de_sada_3_style.js"></script>
+        <script src="styles/RioParaopeba_4_style.js"></script>
+        <script src="./layers/layers.js" type="text/javascript"></script> 
+        <script src="./resources/Autolinker.min.js"></script>
+        <script src="./resources/qgis2web.js"></script>
+    </body>
+</html>
